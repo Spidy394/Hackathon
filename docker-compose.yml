@@ -20,7 +20,7 @@ services:
   frontend:
     build: ./CargoManagement
     ports:
-      - "5173:4173"  # Vite preview default
+      - "4173:4173"  
     depends_on:
       - backend
 
