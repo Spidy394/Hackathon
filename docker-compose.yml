@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017
+    depends_on:
+      - mongo
+
+  frontend:
+    build: ./CargoManagement
+    ports:
+      - "5173:4173"  # Vite preview default
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:

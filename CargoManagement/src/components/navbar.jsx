@@ -10,7 +10,7 @@ const Navbar = () => {
   return (
     <nav className="bg-gradient-to-r from-gray-900 to-blue-900 text-white px-8 py-4 flex justify-between items-center border-b border-gray-700/50">
       <Link to="/" className="flex items-center gap-2 group">
-        <img src={logo} alt="Logo" className="w-10 h-10" />
+        <img src={logo} alt="Logo" className="w-10 h-10 rounded-full" />
         <div className="text-xl font-bold leading-tight">
           <div className="font-sans">STELLAR</div>
           <div className="-mt-2 font-sans">STASH</div>

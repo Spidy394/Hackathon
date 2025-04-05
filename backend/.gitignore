@@ -1,0 +1,35 @@
+# Node.js dependencies (if you're using Node.js for the backend)
+node_modules/
+
+# Python dependencies (if your backend uses Python)
+venv/
+__pycache__/
+
+# Docker
+*.log
+*.pid
+docker-compose.override.yml
+docker-compose.yml
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+/dist/
+/build/
+
+# Logs
+logs/
+*.log
+
+# Mac system files
+.DS_Store
+
+# IDE files
+.idea/
+.vscode/
+
+# Other OS-specific files
+Thumbs.db

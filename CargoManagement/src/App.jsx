@@ -5,6 +5,7 @@ import Home from "../src/scenes/home";
 import Register from "../src/scenes/register";
 import Login from "../src/scenes/login";
 import Management from "../src/scenes/management";
+import StatsPage from "../src/scenes/stats";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/management" element={<Management />} />
+            <Route path="/stats" element={<StatsPage />} />
           </Routes>
         </div>
         <Footer />
