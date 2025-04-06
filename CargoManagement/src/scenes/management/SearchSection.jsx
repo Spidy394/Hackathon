@@ -20,8 +20,11 @@ const SearchSection = () => {
 
     try {
       setLoading(true);
-      const params = itemId ? { itemId } : { name: itemName };
-      const res = await axios.get("http://localhost:8000/api/retrieve/item", { params });
+      const params = {};
+      if (itemId) params.itemId = itemId;
+      if (itemName) params.itemName = itemName;
+
+      const res = await axios.get("http://localhost:8000/api/search", { params });
       setResult(res.data);
     } catch (error) {
       console.error("Search failed", error);

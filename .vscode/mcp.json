@@ -1,0 +1,8 @@
+{
+    "servers": {
+        "my-mcp-server-fc603fd9": {
+            "type": "sse",
+            "url": "http://localhost:8000/"
+        }
+    }
+}
