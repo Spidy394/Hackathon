@@ -11,6 +11,7 @@ db = client["stellar_stash"]
 items_collection = db["items"]
 containers_collection = db["containers"]
 logs_collection = db["logs"]  # Add logs collection
+placements_collection = db["placements"]
 
 # Test the connection but don't close it
 try:

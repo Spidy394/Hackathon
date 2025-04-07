@@ -13,7 +13,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MONGODB_URI=mongodb://mongo:27017
+      - MONGO_URI=mongodb://mongo:27017/cargo_management
     depends_on:
       - mongo
 
