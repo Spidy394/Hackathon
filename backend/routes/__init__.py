@@ -16,6 +16,7 @@ from .waste_routes import router as waste_router
 from .log_routes import router as log_router
 from .simulation_routes import router as simulation_router
 from .import_routes import router as import_router
+from .export_routes import router as export_router
 
 # Include all routers with appropriate prefixes
 api_router.include_router(item_router, tags=["Items"])
@@ -25,3 +26,4 @@ api_router.include_router(waste_router, tags=["Waste Management"])
 api_router.include_router(log_router, tags=["Logs"])
 api_router.include_router(simulation_router, tags=["Simulation"])
 api_router.include_router(import_router, tags=["Import/Export"])
+api_router.include_router(export_router, tags=["Import/Export"])

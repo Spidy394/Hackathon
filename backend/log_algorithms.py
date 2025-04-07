@@ -1,6 +1,7 @@
 from typing import List, Optional
 from db import logs_collection
 from models import LogEntry, LogResponse
+from datetime import datetime
 
 def get_logs_algorithm(
     startDate: str,
@@ -23,6 +24,18 @@ def get_logs_algorithm(
         LogResponse object with filtered logs
     """
     try:
+        # Validate date formats first
+        try:
+            # Test if dates are in valid ISO format by parsing them
+            datetime.fromisoformat(startDate.replace('Z', '+00:00'))
+            datetime.fromisoformat(endDate.replace('Z', '+00:00'))
+        except ValueError:
+            # Invalid date format
+            return LogResponse(
+                success=False,
+                logs=[]
+            )
+            
         # Create the base query with date range
         query = {
             "timestamp": {

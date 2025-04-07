@@ -91,15 +91,15 @@ async def retrieve_item(
 async def place_item(request: PlaceItemRequest):
     """Record the placement of an item in a container"""
     try:
-        # Check if the item exists
-        item = items_collection.find_one({"itemId": request.itemId}, {"_id": 0})
-        if not item:
-            return {"success": False, "message": "Item not found"}
-        
-        # Check if the container exists
+        # First check if the container exists
         container = containers_collection.find_one({"containerId": request.containerId}, {"_id": 0})
         if not container:
             return {"success": False, "message": "Container not found"}
+        
+        # Then check if the item exists
+        item = items_collection.find_one({"itemId": request.itemId}, {"_id": 0})
+        if not item:
+            return {"success": False, "message": "Item not found"}
         
         # Log the placement action
         print(f"Item {request.itemId} placed in container {request.containerId} by user {request.userId} at {request.timestamp}")

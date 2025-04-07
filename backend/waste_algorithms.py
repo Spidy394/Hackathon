@@ -49,26 +49,62 @@ def identify_waste_algorithm(items: List[Dict], containers: List[Dict]) -> Waste
             
             # Check if item is expired
             expiry_date = item.get("expiryDate", "N/A")
-            if expiry_date != "N/A" and expiry_date < current_date:
-                waste_items.append(WasteItem(
-                    itemId=item["itemId"],
-                    name=item["name"],
-                    reason="Expired",
-                    containerId=container_id,
-                    position=default_position
-                ))
-                continue
+            if expiry_date != "N/A":
+                try:
+                    # Convert strings to datetime objects for proper comparison
+                    expiry_datetime = datetime.strptime(expiry_date, "%Y-%m-%d")
+                    current_datetime = datetime.strptime(current_date, "%Y-%m-%d")
+                    
+                    if expiry_datetime < current_datetime:
+                        waste_items.append(WasteItem(
+                            itemId=item["itemId"],
+                            name=item["name"],
+                            reason="Expired",
+                            containerId=container_id,
+                            position=default_position
+                        ))
+                        continue
+                except ValueError:
+                    # If date parsing fails, try string comparison as fallback
+                    if expiry_date < current_date:
+                        waste_items.append(WasteItem(
+                            itemId=item["itemId"],
+                            name=item["name"],
+                            reason="Expired",
+                            containerId=container_id,
+                            position=default_position
+                        ))
+                        continue
             
             # Check if item is out of uses
             usage_limit = item.get("usageLimit", "N/A")
             if usage_limit != "N/A" and usage_limit.lower() != "unlimited":
-                # Parse usage limit (e.g., "30 uses" -> 30)
+                # Parse usage limit with improved handling
                 try:
-                    if "uses" in usage_limit.lower():
-                        limit_value = int(usage_limit.lower().split("uses")[0].strip())
-                        # Simulate a random current usage between 0 and 120% of the limit
-                        # In a real system, this would come from a usage counter in the database
-                        # For this demo, we'll randomly mark some items as out of uses
+                    # Handle different formats: "30 uses", "30", "0"
+                    limit_text = usage_limit.lower()
+                    limit_value = None
+                    
+                    if "uses" in limit_text:
+                        limit_value = int(limit_text.split("uses")[0].strip())
+                    else:
+                        # Try to parse as a direct number
+                        limit_value = int(limit_text.strip())
+                    
+                    if limit_value is not None:
+                        # For testing/demo purposes, we'll treat items with 0 uses left as waste
+                        if limit_value <= 0:
+                            waste_items.append(WasteItem(
+                                itemId=item["itemId"],
+                                name=item["name"],
+                                reason="Out of Uses",
+                                containerId=container_id,
+                                position=default_position
+                             ))
+                            continue
+                            
+                        # Simulate a random current usage for demo purposes
+                        # In a real system, this would come from a usage counter
                         import random
                         current_usage = random.randint(0, int(limit_value * 1.2))
                         
@@ -80,7 +116,7 @@ def identify_waste_algorithm(items: List[Dict], containers: List[Dict]) -> Waste
                                 containerId=container_id,
                                 position=default_position
                             ))
-                except (ValueError, TypeError):
+                except (ValueError, TypeError, AttributeError):
                     # Skip if usage limit cannot be parsed
                     pass
         

@@ -50,11 +50,13 @@ def simulate_day_algorithm(
                 changes=SimulationChanges()
             )
         
+        # Even if there are no items in the database, we should still simulate the passage of time
+        # This is a change from the original implementation which returned failure if no items found
         if not all_items:
-            print("No items found in database")
+            print("No items found in database - simulating only time passage")
             return SimulateResponse(
-                success=False,
-                newDate=current_date.isoformat(),
+                success=True,  # Changed to true since time simulation is still successful
+                newDate=new_date.isoformat(),  # Use the calculated new date
                 changes=SimulationChanges()
             )
         
@@ -89,8 +91,14 @@ def simulate_day_algorithm(
                 # Item not found - log but continue with other items
                 print(f"Item not found: ID={item_id}, Name={item_name}")
         
+        # Even if no valid items found, we should still successfully simulate time
         if not items_to_use:
-            print("No valid items to simulate usage for")
+            print("No valid items to simulate usage for - simulating only time passage")
+            return SimulateResponse(
+                success=True,  # Changed to true since time simulation is still successful
+                newDate=new_date.isoformat(),
+                changes=SimulationChanges()
+            )
         
         # Track changes
         items_used = []
