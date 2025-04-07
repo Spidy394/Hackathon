@@ -2,6 +2,7 @@
 node_modules/
 
 # Python dependencies (if your backend uses Python)
+.venv/
 venv/
 __pycache__/
 

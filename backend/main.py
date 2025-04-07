@@ -1,11 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from db import items_collection, containers_collection
+import uvicorn
+from routes import api_router
 
-app = FastAPI()
+# Create the FastAPI application
+app = FastAPI(title="stellar_stash")
 
+# Configure CORS
 origins = [
-    "http://localhost:5173",  # frontend dev server (vite)
+    "http://localhost:5173",
+    "http://localhost:4173",
+    "http://frontend:4173",
 ]
 
 app.add_middleware(
@@ -16,12 +21,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/api/items")
-async def get_items():
-    items = list(items_collection.find({}, {"_id": 0}))
-    return {"items": items}
+# Root endpoint
+@app.get("/")
+async def root():
+    return {"message": "Stellar Stash API is running"}
 
-@app.get("/api/containers")
-async def get_containers():
-    containers = list(containers_collection.find({}, {"_id": 0}))
-    return {"containers": containers}
+# Include all API routes
+app.include_router(api_router)
+
+# Run the application
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
