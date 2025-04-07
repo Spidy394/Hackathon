@@ -12,14 +12,40 @@ async def identify_waste():
     try:
         # Get all items and containers
         items = list(items_collection.find({}, {"_id": 0}))
+        if not items:
+            print("No items found in database for waste identification")
+            return WasteResponse(success=True, wasteItems=[])
+            
         containers = list(containers_collection.find({}, {"_id": 0}))
+        if not containers:
+            print("No containers found in database for waste identification")
+            # We still need containers for the algorithm to work properly
+            # Return an empty response but inform about the issue
+            return WasteResponse(success=True, wasteItems=[])
+        
+        # Log the items and containers count for debugging
+        print(f"Checking {len(items)} items and {len(containers)} containers for waste identification")
         
         # Use the waste identification algorithm
-        return identify_waste_algorithm(items, containers)
+        result = identify_waste_algorithm(items, containers)
+        
+        # Log the waste items count
+        if result.success:
+            print(f"Identified {len(result.wasteItems)} waste items")
+        else:
+            print("Waste identification failed")
+            
+        return result
     
     except Exception as e:
-        print(f"Error in waste identification: {str(e)}")
-        return WasteResponse(success=False, wasteItems=[])
+        error_message = f"Error in waste identification: {str(e)}"
+        print(error_message)
+        
+        # Return a more informative error response
+        return WasteResponse(
+            success=False, 
+            wasteItems=[]
+        )
 
 @router.post("/api/waste/return-plan", response_model=WasteReturnPlanResponse)
 async def create_waste_return_plan(request: WasteReturnPlanRequest):
@@ -66,7 +92,7 @@ async def create_waste_return_plan(request: WasteReturnPlanRequest):
             returnManifest=None
         )
 
-@router.post("/api/waste/complete‐undocking")
+@router.post("/api/waste/complete-undocking")
 async def complete_undocking(request: dict):
     """Complete the undocking process and log disposal of waste items"""
     try:
@@ -78,16 +104,16 @@ async def complete_undocking(request: dict):
         if not undocking_container_id or not timestamp:
             return {"success": False, "itemsRemoved": 0}
         
-        # First, identify waste items
+        # First, check if the container exists
+        container = containers_collection.find_one({"containerId": undocking_container_id}, {"_id": 0})
+        if not container:
+            return {"success": False, "itemsRemoved": 0, "message": "Container not found"}
+        
+        # Then identify waste items
         waste_response = await identify_waste()
         
         if not waste_response.success or len(waste_response.wasteItems) == 0:
             return {"success": True, "itemsRemoved": 0}
-        
-        # Find the container
-        container = containers_collection.find_one({"containerId": undocking_container_id}, {"_id": 0})
-        if not container:
-            return {"success": False, "itemsRemoved": 0, "message": "Container not found"}
         
         # Get IDs of all waste items
         waste_item_ids = [item.itemId for item in waste_response.wasteItems]
